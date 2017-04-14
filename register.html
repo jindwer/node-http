@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Sign in</title>
+  <style media="screen">
+    *{
+      margin:0;
+      padding:0;
+    }
+    .box{
+      box-sizing: border-box;
+      width:33%;
+      min-width:320px;
+      margin:50px auto;
+      border:1px solid coral;
+      border-radius:5px;
+      background:rgba(255,127,80,0.4);
+      padding:20px 10px;
+      box-shadow:2px 3px 5px rgba(0,0,0,0.2);
+    }
+    .form-box{
+      width:100%;
+      padding-top:20px;
+    }
+    .input{
+      width:100%;
+      padding:10px 0;
+    }
+    label{
+      display:inline-block;
+      width:25%;
+      font-size:1.2em;
+    }
+    input{
+      width:75%;
+      box-sizing: border-box;
+      padding:8px 10px;
+      border:2px solid coral;
+      border-radius:5px;
+      outline: none;
+      font-size:1.2em;
+    }
+    input:focus{
+      border-color:tomato;
+    }
+    input[type=submit]{
+      display:block;
+      width:50%;
+      margin:30px auto;
+      cursor:pointer;
+      background:rgba(249,97,69,0.8);
+      color:#fff;
+    }
+    input[type=submit]:hover{
+      background:rgba(249,97,69,1);
+    }
+    .tip{
+      width:100%;
+      position:fixed;
+      top:0;
+      box-sizing: border-box;
+      padding:5px;
+      text-align: center;
+      color:#fff;
+      font-size:1.1em;
+      font-weight:bold;
+      display:none;
+      box-shadow:0 0 5px rgba(0,0,0,1);
+    }
+    .success{
+      background:#299F77;
+      display:block;
+    }
+    .success::before{
+      /*content: "Success!";*/
+    }
+    .error{
+      background:#CC0001;
+      display:block;
+    }
+    .error::before{
+      content: "Error!";
+    }
+  </style>
+</head>
+<body>
+  <div class="tip"></div>
+  <div class="box">
+    <h1>You can register</h1>
+    <div class="form-box">
+      <form id="form" action="/register">
+        <div class="input"><label>User:</label><input type="text" name="user" value="" placeholder="Please input your username!"></div>
+        <div class="input"><label>Nike:</label><input type="text" name="nike" value="" placeholder="Please input your nikename!"></div>
+        <div class="input"><label>Password:</label><input type="password" name="pwd" value="" placeholder="Your password!"></div>
+        <input type="submit" value="Sign in"><small><a href="./login">go login</a></small>
+      </form>
+    </div>
+  </div>
+  <script src="http://cdn.bootcss.com/jquery/3.2.1/jquery.js"></script>
+  <script type="text/javascript">
+      $(function(){
+        var name,nike,pwd;
+        var url = $('#form').attr('action');
+        var tip = $('.tip');
+        $('#form').submit(function(e){
+          e.preventDefault();
+          name = $('input[name="user"]').val();
+          nike = $('input[name="nike"]').val();
+          pwd  = $('input[name="pwd"]').val();
+          if(name&&nike&&pwd){
+            $.post(url,{name:name,nike:nike,pwd:pwd},function(data){
+                data = JSON.parse(data);
+                if(data.status==1){
+                 tip.addClass('success').append(" Welcome, <span style='color:#074B88;'>"+data.nike+"</span>");
+                 $('input[type=submit]').attr("disabled",true);
+                 setTimeout(function(){
+                   location.replace("./login");
+                 },3000);
+               }else if(data.status==0){
+                 tip.text("").addClass('error').append(" maybe you can choose new username!");
+               }else{
+                 tip.text("").addClass('error').append(" Server is too busy,you can try again later!");
+               }
+            }).fail(function(){
+              alert("Server is busy!");
+            });
+          }else{
+            tip.text("").addClass('error');
+          }
+        });
+        $('input').focus(function(){
+          tip.removeClass('success error');
+        });
+      });
+  </script>
+</body>
+</html>
